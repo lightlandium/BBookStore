@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Оформление заказа{% endblock %}
+{% block content %}
+<h1>Оформление заказа</h1>
+<p><strong>Сумма к оплате: {{ total }} ₽</strong></p>
+<form method="POST">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+        {{ form.delivery_method.label(class="form-label") }}
+        {% for subfield in form.delivery_method %}
+        <div class="form-check">
+            {{ subfield(class="form-check-input") }}
+            {{ subfield.label(class="form-check-label") }}
+        </div>
+        {% endfor %}
+    </div>
+    <div class="mb-3" id="addressField" style="display: none;">
+        {{ form.address.label(class="form-label") }}
+        {{ form.address(class="form-control") }}
+    </div>
+    {{ form.submit(class="btn btn-success") }}
+</form>
+<script>
+    const radios = document.querySelectorAll('input[name="delivery_method"]');
+    const addressDiv = document.getElementById('addressField');
+    radios.forEach(radio => {
+        radio.addEventListener('change', () => {
+            addressDiv.style.display = radio.value === 'courier' ? 'block' : 'none';
+        });
+    });
+    if (document.querySelector('input[name="delivery_method"]:checked')?.value === 'courier') {
+        addressDiv.style.display = 'block';
+    }
+</script>
+{% endblock %}

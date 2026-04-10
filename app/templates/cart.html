@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Корзина{% endblock %}
+{% block content %}
+<h1>Корзина</h1>
+{% if items %}
+<table class="table">
+    <thead>
+        <tr><th>Книга</th><th>Автор</th><th>Цена</th><th>Количество</th><th>Сумма</th><th></th></tr>
+    </thead>
+    <tbody>
+        {% for item in items %}
+        <tr>
+            <td>{{ item.book.title }}</td>
+            <td>{{ item.book.author }}</td>
+            <td>{{ item.book.price }} ₽</td>
+            <td>
+                <form method="POST" action="{{ url_for('main.update_cart', item_id=item.id) }}" style="display:inline;">
+                    <button type="submit" name="action" value="decrease" class="btn btn-sm btn-secondary">-</button>
+                    {{ item.quantity }}
+                    <button type="submit" name="action" value="increase" class="btn btn-sm btn-secondary">+</button>
+                </form>
+            </td>
+            <td>{{ item.book.price * item.quantity }} ₽</td>
+            <td>
+                <form method="POST" action="{{ url_for('main.update_cart', item_id=item.id) }}">
+                    <button type="submit" name="action" value="remove" class="btn btn-sm btn-danger">Удалить</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr><td colspan="4" class="text-end"><strong>Итого:</strong></td><td><strong>{{ total }} ₽</strong></td><td></td></tr>
+    </tfoot>
+</table>
+<a href="{{ url_for('main.checkout') }}" class="btn btn-primary">Оформить заказ</a>
+{% else %}
+<p>Корзина пуста.</p>
+{% endif %}
+{% endblock %}

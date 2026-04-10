@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Заказ №{{ order.id }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Заказ №{{ order.id }}</h1>
+
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            Информация о заказе
+        </div>
+        <div class="card-body">
+            <p><strong>Дата оформления:</strong> {{ order.order_date.strftime('%d.%m.%Y %H:%M') }}</p>
+            <p><strong>Статус:</strong>
+                {% if order.status == 'Оформлен' %}
+                    <span class="badge bg-warning text-dark">Оформлен</span>
+                {% elif order.status == 'Отменён' %}
+                    <span class="badge bg-danger">Отменён</span>
+                {% elif order.status == 'Доставлен' %}
+                    <span class="badge bg-success">Доставлен</span>
+                {% else %}
+                    <span class="badge bg-secondary">{{ order.status }}</span>
+                {% endif %}
+            </p>
+            <p><strong>Способ доставки:</strong>
+                {% if order.delivery_method == 'pickup' %}
+                    Самовывоз
+                {% else %}
+                    До двери
+                {% endif %}
+            </p>
+            {% if order.delivery_address %}
+                <p><strong>Адрес доставки:</strong> {{ order.delivery_address }}</p>
+            {% endif %}
+            <p><strong>Общая сумма:</strong> <span class="fw-bold">{{ order.total_price }} ₽</span></p>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-secondary text-white">
+            Товары в заказе
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Обложка</th>
+                        <th>Название</th>
+                        <th>Автор</th>
+                        <th>Количество</th>
+                        <th>Цена за шт.</th>
+                        <th>Сумма</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order.items %}
+                    <tr>
+                        <td>
+                            <img src="{{ item.book.cover_image or 'https://via.placeholder.com/50x70?text=No+Image' }}"
+                                 alt="{{ item.book.title }}" style="width: 50px; height: auto;">
+                        </td>
+                        <td>{{ item.book.title }}</td>
+                        <td>{{ item.book.author }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.price_at_purchase }} ₽</td>
+                        <td>{{ item.quantity * item.price_at_purchase }} ₽</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="5" class="text-end"><strong>Итого:</strong></td>
+                        <td><strong>{{ order.total_price }} ₽</strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between">
+        <a href="{{ url_for('main.orders') }}" class="btn btn-secondary">← Назад к моим заказам</a>
+        {% if order.status == 'Оформлен' %}
+        <form method="POST" action="{{ url_for('main.cancel_order', order_id=order.id) }}" onsubmit="return confirm('Вы уверены, что хотите отменить заказ?');">
+            <button type="submit" class="btn btn-danger">Отменить заказ</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

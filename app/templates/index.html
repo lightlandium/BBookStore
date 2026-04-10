@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="mb-4">Добро пожаловать в книжный магазин!</h1>
+
+<!-- ТОП-3 книги -->
+<h2>ТОП-3 книги недели</h2>
+<div class="row">
+    {% for book in top_books %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <img src="{{ url_for('static', filename='images/' + book.cover_image) if book.cover_image else 'https://via.placeholder.com/200x300?text=No+Image' }}"
+                 class="card-img-top" alt="{{ book.title }}" style="height: 300px; object-fit: cover;">
+            <div class="card-body">
+                <h5 class="card-title">{{ book.title }}</h5>
+                <p class="card-text">{{ book.author }}, {{ book.year }} г.</p>
+                <p class="card-text"><strong>{{ book.price }} ₽</strong></p>
+                <a href="{{ url_for('main.book_detail', id=book.id) }}" class="btn btn-primary">Подробнее</a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <p>Книги пока не добавлены.</p>
+    {% endfor %}
+</div>
+        <!-- Разделы каталога (жанры) -->
+        <h2 class="mt-5">Разделы каталога</h2>
+        <div class="row">
+            {% for genre in genres %}
+            <div class="col-md-3 mb-3">
+                <a href="{{ url_for('main.catalog', genre=genre.id) }}" class="btn btn-outline-secondary w-100">
+                    {{ genre.name }}
+                </a>
+            </div>
+            {% else %}
+            <p>Жанры не добавлены.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

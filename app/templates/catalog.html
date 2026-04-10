@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<h1>{{ title }}</h1>
+
+<div class="row mb-4">
+    <!-- Боковая панель с жанрами -->
+    <div class="col-md-3">
+        <h5>Жанры</h5>
+        <ul class="list-group">
+            <li class="list-group-item">
+                <a href="{{ url_for('main.catalog') }}">Все книги</a>
+            </li>
+            {% for genre in genres %}
+            <li class="list-group-item">
+                <a href="{{ url_for('main.catalog', genre=genre.id) }}">
+                    {{ genre.name }}
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Список книг выбранного жанра -->
+    <div class="col-md-9">
+        <div class="row">
+            {% for book in books %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <img src="{{ url_for('static', filename='images/' + book.cover_image) if book.cover_image else 'https://via.placeholder.com/150x200?text=No+Image' }}"
+                         class="card-img-top" alt="{{ book.title }}" style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ book.title }}</h5>
+                        <p class="card-text">{{ book.author }}</p>
+                        <p class="card-text"><strong>{{ book.price }} ₽</strong></p>
+                        <a href="{{ url_for('main.book_detail', id=book.id) }}" class="btn btn-sm btn-primary">
+                            Подробнее
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <p>В этой категории пока нет книг.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

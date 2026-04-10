@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}{{ book.title }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <!-- Исправленный тег img с генерацией пути через url_for и fallback-заглушкой -->
+        <img src="{{ url_for('static', filename='images/' + book.cover_image) if book.cover_image else 'https://via.placeholder.com/300x400?text=No+Image' }}"
+             class="img-fluid"
+             alt="{{ book.title }}">
+    </div>
+    <div class="col-md-8">
+        <h1>{{ book.title }}</h1>
+        <p><strong>Автор:</strong> {{ book.author }}</p>
+        <p><strong>Год:</strong> {{ book.year }}</p>
+        <p><strong>Цена:</strong> {{ book.price }} ₽</p>
+        <p><strong>Рейтинг:</strong> ⭐ {{ book.rating }}</p>
+        <p><strong>Описание:</strong> {{ book.description }}</p>
+        <a href="{{ url_for('main.add_to_cart', book_id=book.id) }}" class="btn btn-success">Добавить в корзину</a>
+
+        <hr>
+        <h3>Отзывы ({{ book.reviews|length }})</h3>
+        {% for review in reviews %}
+        <div class="card mb-2">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">
+                    {{ review.user.first_name }} — оценка: {{ review.rating }}/5
+                </h6>
+                <p class="card-text">{{ review.comment }}</p>
+                <small>{{ review.created_at.strftime('%d.%m.%Y') }}</small>
+            </div>
+        </div>
+        {% else %}
+        <p>Пока нет отзывов. Будьте первым!</p>
+        {% endfor %}
+
+        {% if current_user.is_authenticated %}
+        <div class="mt-4">
+            <h4>Оставить отзыв</h4>
+            <form method="POST" action="{{ url_for('main.add_review', book_id=book.id) }}">
+                {{ form.hidden_tag() }}
+                <div class="mb-3">
+                    {{ form.rating.label(class="form-label") }}
+                    {{ form.rating(class="form-select") }}
+                </div>
+                <div class="mb-3">
+                    {{ form.comment.label(class="form-label") }}
+                    {{ form.comment(class="form-control", rows=3) }}
+                </div>
+                {{ form.submit(class="btn btn-primary") }}
+            </form>
+        </div>
+        {% else %}
+        <p><a href="{{ url_for('auth.login') }}">Войдите</a>, чтобы оставить отзыв.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
