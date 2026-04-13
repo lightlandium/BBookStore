@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, SelectField, IntegerField, TextAreaField, RadioField, BooleanField
-from wtforms.validators import DataRequired, Email, Length, EqualTo, NumberRange
+from wtforms import StringField, PasswordField, SubmitField, SelectField, TextAreaField, RadioField, BooleanField
+from wtforms.validators import DataRequired, Email, Length, EqualTo, ValidationError
 
 class RegistrationForm(FlaskForm):
     first_name = StringField('Имя', validators=[DataRequired(), Length(max=50)])
@@ -27,6 +27,12 @@ class ReviewForm(FlaskForm):
     submit = SubmitField('Оставить отзыв')
 
 class CheckoutForm(FlaskForm):
-    delivery_method = RadioField('Способ доставки', choices=[('pickup','Самовывоз'),('courier','До двери')], default='pickup')
+    delivery_method = RadioField('Способ доставки',
+                                 choices=[('pickup','Самовывоз'),('courier','До двери')],
+                                 default='pickup')
     address = StringField('Адрес доставки', validators=[Length(max=300)])
     submit = SubmitField('Подтвердить и оформить заказ')
+
+    def validate_address(self, field):
+        if self.delivery_method.data == 'courier' and not field.data:
+            raise ValidationError('Адрес доставки обязателен при выборе "До двери".')

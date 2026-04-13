@@ -20,24 +20,22 @@
                     {% if current_user.is_authenticated %}
                         <li class="nav-item"><a class="nav-link" href="{{ url_for('main.cart') }}">Корзина</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ url_for('main.orders') }}">Мои заказы</a></li>
-                        <!-- Ссылка на админку – видна только пользователю с id == 1 -->
                         {% if current_user.id == 1 %}
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.add_genre') }}">⭐ Админка (добавить жанр)</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.add_genre') }}">⭐ Админка</a></li>
                         {% endif %}
                     {% endif %}
                 </ul>
-
-                <!-- Форма поиска -->
                 <form class="d-flex me-2" action="{{ url_for('main.search') }}" method="GET">
                     <input class="form-control me-1" type="search" name="q" placeholder="Поиск книг..." aria-label="Search">
                     <button class="btn btn-outline-light" type="submit">🔍</button>
                 </form>
-
-                <!-- Правая часть навигации (вход / регистрация / профиль) -->
                 <ul class="navbar-nav">
                     {% if current_user.is_authenticated %}
                         <li class="nav-item"><span class="navbar-text me-2">Привет, {{ current_user.first_name }}</span></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}">Выйти</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="event.preventDefault(); if(confirm('Вы уверены, что хотите выйти?')) { document.getElementById('logout-form').submit(); }">Выйти</a>
+                            <form id="logout-form" action="{{ url_for('auth.logout') }}" method="POST" style="display: none;"></form>
+                        </li>
                     {% else %}
                         <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">Вход</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.register') }}">Регистрация</a></li>
@@ -46,7 +44,6 @@
             </div>
         </div>
     </nav>
-
     <div class="container mt-4">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% for category, msg in messages %}
@@ -56,10 +53,8 @@
                 </div>
             {% endfor %}
         {% endwith %}
-
         {% block content %}{% endblock %}
     </div>
-
     <footer class="bg-dark text-white text-center py-3 mt-5">
         <div class="container">© 2025 Книжный магазин. Все права защищены.</div>
     </footer>
